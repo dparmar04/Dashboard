@@ -1,7 +1,5 @@
-"use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import mockData from "../utils/mockData";
-import { FiChevronUp, FiChevronDown } from "react-icons/fi"; // Import icons
 
 export default function Table() {
   const [query, setQuery] = useState("");
@@ -13,6 +11,11 @@ export default function Table() {
   const filteredData = mockData
     .filter((item) => item.name.toLowerCase().includes(query.toLowerCase()))
     .sort((a, b) => (sortOrder === "asc" ? a.id - b.id : b.id - a.id));
+
+  // **Reset Pagination on Search**
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [query]);
 
   // Pagination logic
   const totalPages = Math.ceil(filteredData.length / rowsPerPage);
@@ -26,6 +29,7 @@ export default function Table() {
           type="text"
           placeholder="Search..."
           className="p-3 bg-blue-100 flex-1/2 rounded mb-4 w-full outline-none placeholder-gray-500 text-black"
+          value={query}
           onChange={(e) => setQuery(e.target.value)}
         />
         <button
@@ -55,7 +59,6 @@ export default function Table() {
 
       {/* Pagination Controls */}
       <div className="flex justify-center items-center mt-4 space-x-2">
-        {/* Previous Button */}
         <button
           className="px-3 py-1 bg-gray-700 text-white rounded disabled:bg-gray-400"
           onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
@@ -64,7 +67,6 @@ export default function Table() {
           Previous
         </button>
 
-        {/* Page Numbers */}
         {[...Array(totalPages)].map((_, index) => (
           <button
             key={index}
@@ -78,7 +80,6 @@ export default function Table() {
           </button>
         ))}
 
-        {/* Next Button */}
         <button
           className="px-3 py-1 bg-gray-700 text-white rounded disabled:bg-gray-400"
           onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
